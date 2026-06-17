@@ -1,0 +1,750 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Documentación - Ziyu Jardinería{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="docs-header">
+            <h1 class="docs-header__title">Documentación del Proyecto</h1>
+            <p class="docs-header__subtitle">Ziyu Jardinería — Sistema de Gestión de Visitas v1.0</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-row">
+            <div class="stat-card stat-card--total">
+                <div class="stat-card__number">{{ stats.total_visits }}</div>
+                <div class="stat-card__label">Visitas registradas</div>
+            </div>
+            <div class="stat-card stat-card--assigned">
+                <div class="stat-card__number">{{ stats.total_gardeners }}</div>
+                <div class="stat-card__label">Jardineros</div>
+            </div>
+            <div class="stat-card stat-card--confirmed">
+                <div class="stat-card__number">{{ stats.total_services }}</div>
+                <div class="stat-card__label">Tipos de servicio</div>
+            </div>
+            <div class="stat-card stat-card--pending">
+                <div class="stat-card__number">4</div>
+                <div class="stat-card__label">Estados posibles</div>
+            </div>
+        </div>
+
+        <!-- Table of contents -->
+        <div class="card docs-toc">
+            <div class="card__header">
+                <h2 class="card__title">Índice</h2>
+            </div>
+            <div class="card__body">
+                <ol class="docs-toc__list">
+                    <li><a href="#descripcion">Descripción del sistema</a></li>
+                    <li><a href="#instalacion">Comandos de instalación</a></li>
+                    <li><a href="#funcionalidad">Funcionalidad de la aplicación</a></li>
+                    <li><a href="#diagrama-bd">Diagrama de base de datos</a></li>
+                    <li><a href="#diagrama-procesos">Diagrama de procesos</a></li>
+                    <li><a href="#endpoints">Rutas y endpoints</a></li>
+                    <li><a href="#seguridad">Seguridad</a></li>
+                    <li><a href="#shell">Operaciones con shell_plus</a></li>
+                    <li><a href="#tests">Tests</a></li>
+                    <li><a href="#estructura">Estructura del proyecto</a></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 1. Description -->
+        <div class="card" id="descripcion">
+            <div class="card__header">
+                <h2 class="card__title">1. Descripción del sistema</h2>
+            </div>
+            <div class="card__body docs-content">
+                <p>
+                    <strong>Ziyu Jardinería</strong> es una aplicación web construida con Django 6.0 que permite a una
+                    empresa de jardinería gestionar las solicitudes de visita de sus clientes. El sistema implementa el
+                    patrón MVT (Model-View-Template) de Django sin usar Django REST Framework ni React.
+                </p>
+                <h3>Tecnologías utilizadas</h3>
+                <div class="docs-tech-grid">
+                    <div class="docs-tech-item">
+                        <strong>Backend</strong>
+                        <span>Django 6.0.6, Python 3.12+</span>
+                    </div>
+                    <div class="docs-tech-item">
+                        <strong>Base de datos</strong>
+                        <span>PostgreSQL 14+ con psycopg 3</span>
+                    </div>
+                    <div class="docs-tech-item">
+                        <strong>Frontend</strong>
+                        <span>HTML5, CSS3, JavaScript vanilla</span>
+                    </div>
+                    <div class="docs-tech-item">
+                        <strong>Mapas</strong>
+                        <span>Leaflet.js + OpenStreetMap</span>
+                    </div>
+                    <div class="docs-tech-item">
+                        <strong>Geocodificación</strong>
+                        <span>Nominatim (reverse geocoding)</span>
+                    </div>
+                    <div class="docs-tech-item">
+                        <strong>Herramientas dev</strong>
+                        <span>django-extensions (shell_plus)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Installation -->
+        <div class="card" id="instalacion">
+            <div class="card__header">
+                <h2 class="card__title">2. Comandos de instalación</h2>
+            </div>
+            <div class="card__body docs-content">
+                <h3>Prerrequisitos</h3>
+                <ul>
+                    <li>Python 3.12 o superior</li>
+                    <li>PostgreSQL 14 o superior</li>
+                    <li>pip (gestor de paquetes de Python)</li>
+                </ul>
+
+                <h3>Pasos de instalación</h3>
+                <div class="docs-step">
+                    <span class="docs-step__number">1</span>
+                    <div class="docs-step__content">
+                        <strong>Clonar el repositorio y entrar al directorio</strong>
+                        <pre class="docs-code"><code>cd backend-ziyu</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">2</span>
+                    <div class="docs-step__content">
+                        <strong>Crear y activar el entorno virtual</strong>
+                        <pre class="docs-code"><code># Windows:
+python -m venv env
+env\Scripts\activate
+
+# Linux/Mac:
+python3 -m venv env
+source env/bin/activate</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">3</span>
+                    <div class="docs-step__content">
+                        <strong>Instalar dependencias</strong>
+                        <pre class="docs-code"><code>pip install -r requirements.txt</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">4</span>
+                    <div class="docs-step__content">
+                        <strong>Configurar variables de entorno</strong>
+                        <pre class="docs-code"><code># Editar .env con tus credenciales:
+SECRET_KEY=tu-clave-secreta-aqui
+DB_NAME=ziyu
+DB_USER=postgres
+DB_PASSWORD=tu-password
+DB_HOST=localhost
+DB_PORT=5432</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">5</span>
+                    <div class="docs-step__content">
+                        <strong>Crear la base de datos en PostgreSQL</strong>
+                        <pre class="docs-code"><code>psql -U postgres -c "CREATE DATABASE ziyu;"</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">6</span>
+                    <div class="docs-step__content">
+                        <strong>Ejecutar migraciones</strong>
+                        <pre class="docs-code"><code>python manage.py migrate</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">7</span>
+                    <div class="docs-step__content">
+                        <strong>Crear superusuario</strong>
+                        <pre class="docs-code"><code>python manage.py createsuperuser</code></pre>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">8</span>
+                    <div class="docs-step__content">
+                        <strong>Cargar datos iniciales</strong>
+                        <pre class="docs-code"><code>python manage.py load_initial_data</code></pre>
+                        <p class="docs-note">Crea 5 tipos de servicio y 3 jardineros de ejemplo.</p>
+                    </div>
+                </div>
+                <div class="docs-step">
+                    <span class="docs-step__number">9</span>
+                    <div class="docs-step__content">
+                        <strong>Iniciar el servidor de desarrollo</strong>
+                        <pre class="docs-code"><code>python manage.py runserver</code></pre>
+                        <p class="docs-note">Accede a <code>http://localhost:8000</code></p>
+                    </div>
+                </div>
+
+                <h3>Ejecutar tests</h3>
+                <pre class="docs-code"><code>python manage.py test visits -v 2</code></pre>
+            </div>
+        </div>
+
+        <!-- 3. Functionality -->
+        <div class="card" id="funcionalidad">
+            <div class="card__header">
+                <h2 class="card__title">3. Funcionalidad de la aplicación</h2>
+            </div>
+            <div class="card__body docs-content">
+                <div class="docs-feature">
+                    <div class="docs-feature__header">
+                        <span class="badge badge--confirmada">Público</span>
+                        <h3>Formulario de solicitud de visita</h3>
+                    </div>
+                    <p>Los clientes completan un formulario con datos de contacto, dirección, tipo de servicio,
+                       metros cuadrados del jardín y horario preferido. Incluye un mapa interactivo Leaflet que
+                       al hacer clic actualiza automáticamente las coordenadas y la dirección mediante
+                       geocodificación inversa (Nominatim).</p>
+                    <div class="docs-feature__url">
+                        <code>GET /</code> — Muestra el formulario
+                        <br><code>POST /</code> — Crea la solicitud con estado "pendiente"
+                    </div>
+                </div>
+
+                <div class="docs-feature">
+                    <div class="docs-feature__header">
+                        <span class="badge badge--asignada">Protegido</span>
+                        <h3>Panel de empresa (Dashboard)</h3>
+                    </div>
+                    <p>Vista interna protegida con <code>@login_required</code>. Muestra tarjetas con estadísticas
+                       (total, pendientes, asignadas, confirmadas), filtros por estado y tipo de servicio, tabla
+                       responsiva con todas las solicitudes, y un mapa con las ubicaciones marcadas.
+                       Permite asignar jardineros mediante un modal.</p>
+                    <div class="docs-feature__url">
+                        <code>GET /panel/</code> — Dashboard con filtros opcionales por query params
+                    </div>
+                </div>
+
+                <div class="docs-feature">
+                    <div class="docs-feature__header">
+                        <span class="badge badge--asignada">Protegido</span>
+                        <h3>Asignación de jardinero</h3>
+                    </div>
+                    <p>Vista POST-only protegida. Valida que no haya solapamiento de horarios antes de asignar.
+                       Si el jardinero ya tiene una visita en la misma fecha y horario superpuesto, la asignación
+                       se rechaza con un mensaje de error.</p>
+                    <div class="docs-feature__url">
+                        <code>POST /asignar/&lt;id&gt;/</code> — Asigna jardinero, cambia estado a "asignada"
+                    </div>
+                </div>
+
+                <div class="docs-feature">
+                    <div class="docs-feature__header">
+                        <span class="badge badge--confirmada">Público</span>
+                        <h3>Confirmación y cancelación del cliente</h3>
+                    </div>
+                    <p>El cliente accede mediante un token UUID único (previene IDOR). Puede ver los detalles
+                       de su visita, confirmar la cita si tiene jardinero asignado, o cancelarla. Los estados
+                       se actualizan en tiempo real.</p>
+                    <div class="docs-feature__url">
+                        <code>GET /confirmar/&lt;uuid&gt;/</code> — Ver detalles de la visita
+                        <br><code>POST /confirmar/&lt;uuid&gt;/</code> — Confirmar la visita
+                        <br><code>POST /cancelar/&lt;uuid&gt;/</code> — Cancelar la visita
+                    </div>
+                </div>
+
+                <div class="docs-feature">
+                    <div class="docs-feature__header">
+                        <span class="badge badge--asignada">Protegido</span>
+                        <h3>Admin de Django</h3>
+                    </div>
+                    <p>Panel de administración personalizado con list_display, filtros, búsqueda, fieldsets y
+                       date_hierarchy. Permite editar estados y jardineros directamente en la lista.</p>
+                    <div class="docs-feature__url">
+                        <code>/admin/</code> — Gestión completa de modelos
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. DB Diagram -->
+        <div class="card" id="diagrama-bd">
+            <div class="card__header">
+                <h2 class="card__title">4. Diagrama de base de datos</h2>
+            </div>
+            <div class="card__body docs-content">
+                <p>Diagrama entidad-relación de los modelos del sistema:</p>
+                <div class="docs-diagram">
+                    <pre class="docs-diagram__content">
+┌─────────────────────────────────┐
+│          ServiceType            │
+├─────────────────────────────────┤
+│ PK  id          INTEGER        │
+│     name        VARCHAR(100)   │
+│     description TEXT            │
+│     is_active   BOOLEAN        │
+└──────────────┬──────────────────┘
+               │
+               │ 1:N (service_type)
+               │
+┌──────────────▼──────────────────────────────────────────┐
+│                     VisitRequest                         │
+├──────────────────────────────────────────────────────────┤
+│ PK  id                    BIGINT (auto)                  │
+│                                                          │
+│     ── Datos del Cliente ──                              │
+│     client_name           VARCHAR(200)                   │
+│     client_email          VARCHAR(254)                   │
+│     client_phone          VARCHAR(20)                    │
+│                                                          │
+│     ── Ubicación ──                                      │
+│     address               VARCHAR(300)                   │
+│     latitude              DECIMAL(10,7) NULL             │
+│     longitude             DECIMAL(10,7) NULL             │
+│                                                          │
+│     ── Servicio ──                                       │
+│ FK  service_type_id       → ServiceType.id (PROTECT)     │
+│     garden_area_sqm       DECIMAL(8,2)                   │
+│                                                          │
+│     ── Agenda ──                                         │
+│     preferred_date        DATE                           │
+│     preferred_time_start  TIME                           │
+│     preferred_time_end    TIME                           │
+│                                                          │
+│     ── Estado ──                                         │
+│     status                VARCHAR(20) [pendiente,        │
+│                           asignada, confirmada,          │
+│                           cancelada]                     │
+│ FK  gardener_id           → Gardener.id (SET_NULL) NULL  │
+│     confirmation_token    UUID (unique, auto)            │
+│     notes                 TEXT                           │
+│                                                          │
+│     ── Timestamps ──                                     │
+│     created_at            DATETIME (auto_now_add)        │
+│     updated_at            DATETIME (auto_now)            │
+│                                                          │
+│     ── Índices ──                                        │
+│     IDX (status, created_at)                             │
+│     IDX (preferred_date)                                 │
+│     IDX (confirmation_token)                             │
+└──────────────▲──────────────────────────────────────────┘
+               │
+               │ 1:N (gardener) — nullable
+               │
+┌──────────────┴──────────────────┐
+│           Gardener              │
+├─────────────────────────────────┤
+│ PK  id          INTEGER        │
+│     first_name  VARCHAR(100)   │
+│     last_name   VARCHAR(100)   │
+│     phone       VARCHAR(20)    │
+│     email       VARCHAR(254)   │
+│     specialty   VARCHAR(100)   │
+│     is_active   BOOLEAN        │
+└─────────────────────────────────┘
+
+Relaciones:
+  ServiceType  ──1:N──▶  VisitRequest  (on_delete=PROTECT)
+  Gardener     ──1:N──▶  VisitRequest  (on_delete=SET_NULL, nullable)</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Process Diagram -->
+        <div class="card" id="diagrama-procesos">
+            <div class="card__header">
+                <h2 class="card__title">5. Diagrama de procesos</h2>
+            </div>
+            <div class="card__body docs-content">
+                <p>Flujo completo del modelo de negocio:</p>
+                <div class="docs-diagram">
+                    <pre class="docs-diagram__content">
+╔═══════════════════════════════════════════════════════════════════╗
+║                    FLUJO PRINCIPAL DEL NEGOCIO                    ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+  ┌──────────────┐
+  │   CLIENTE    │
+  │  (público)   │
+  └──────┬───────┘
+         │
+         ▼
+  ┌──────────────────────────────────────┐
+  │  1. Solicitar visita                  │
+  │     • Completa formulario público     │
+  │     • Datos: nombre, email, teléfono  │
+  │     • Dirección + mapa interactivo    │
+  │     • Tipo de servicio, m², horario   │
+  │     • Validación server-side          │
+  └──────────────────┬───────────────────┘
+                     │
+                     ▼
+            ┌────────────────┐
+            │    Estado:     │
+            │   PENDIENTE    │◄──────────── Registro creado en BD
+            └────────┬───────┘              con token UUID único
+                     │
+         ┌───────────▼───────────┐
+         │     EMPRESA           │
+         │  (login requerido)    │
+         └───────────┬───────────┘
+                     │
+                     ▼
+  ┌──────────────────────────────────────┐
+  │  2. Revisar en Panel de Gestión      │
+  │     • Ver estadísticas (cards)       │
+  │     • Filtrar por estado/servicio    │
+  │     • Ver ubicaciones en mapa        │
+  │     • Identificar solicitud          │
+  └──────────────────┬───────────────────┘
+                     │
+                     ▼
+  ┌──────────────────────────────────────┐
+  │  3. Asignar jardinero                │
+  │     • Seleccionar jardinero activo   │
+  │     • Validar NO solapamiento:       │
+  │       ┌────────────────────────────┐ │
+  │       │ ¿Mismo jardinero +         │ │
+  │       │  misma fecha +             │ │
+  │       │  horario superpuesto?      │ │
+  │       │                            │ │
+  │       │  SÍ → Error, rechazar      │ │
+  │       │  NO → Asignar OK           │ │
+  │       └────────────────────────────┘ │
+  └──────────────────┬───────────────────┘
+                     │
+                     ▼
+            ┌────────────────┐
+            │    Estado:     │
+            │   ASIGNADA     │
+            └────────┬───────┘
+                     │
+         ┌───────────▼───────────┐
+         │      CLIENTE          │
+         │  (acceso por token)   │
+         └───────────┬───────────┘
+                     │
+                     ▼
+  ┌──────────────────────────────────────┐
+  │  4. Confirmar o cancelar cita        │
+  │     • URL: /confirmar/&lt;uuid&gt;/        │
+  │     • Ver detalles + jardinero       │
+  │     • Botón confirmar o cancelar     │
+  │     • Sin autenticación (token)      │
+  └───────────┬───────────┬──────────────┘
+              │           │
+       Confirma        Cancela
+              │           │
+              ▼           ▼
+     ┌────────────┐  ┌────────────┐
+     │  Estado:   │  │  Estado:   │
+     │ CONFIRMADA │  │ CANCELADA  │
+     └────────────┘  └────────────┘
+
+
+╔═══════════════════════════════════════════════════════════════════╗
+║                  DIAGRAMA DE ESTADOS                              ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+                    ┌───────────┐
+        Creación ──▶│ PENDIENTE │
+                    └─────┬─────┘
+                          │
+                   Asignar jardinero
+                          │
+                    ┌─────▼─────┐
+                    │ ASIGNADA  │
+                    └─────┬─────┘
+                          │
+                ┌─────────┴─────────┐
+                │                   │
+         Cliente confirma    Cliente cancela
+                │                   │
+          ┌─────▼──────┐    ┌──────▼──────┐
+          │ CONFIRMADA │    │  CANCELADA  │
+          └─────┬──────┘    └─────────────┘
+                │                   ▲
+         Cliente cancela            │
+                └───────────────────┘
+
+  Notas:
+  • Desde PENDIENTE se puede cancelar directamente
+  • Desde CONFIRMADA se puede cancelar
+  • CANCELADA es un estado final (no reversible)
+  • La asignación valida solapamiento de horarios</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Endpoints -->
+        <div class="card" id="endpoints">
+            <div class="card__header">
+                <h2 class="card__title">6. Rutas y endpoints</h2>
+            </div>
+            <div class="card__body docs-content">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Método</th>
+                                <th>URL</th>
+                                <th>Vista</th>
+                                <th>Acceso</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--confirmada">GET/POST</span></td>
+                                <td data-label="URL"><code>/</code></td>
+                                <td data-label="Vista">visit_request_view</td>
+                                <td data-label="Acceso">Público</td>
+                                <td data-label="Descripción">Formulario de solicitud</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--confirmada">GET</span></td>
+                                <td data-label="URL"><code>/exito/</code></td>
+                                <td data-label="Vista">visit_request_success</td>
+                                <td data-label="Acceso">Público</td>
+                                <td data-label="Descripción">Página de éxito</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--asignada">GET</span></td>
+                                <td data-label="URL"><code>/panel/</code></td>
+                                <td data-label="Vista">company_dashboard</td>
+                                <td data-label="Acceso">Login</td>
+                                <td data-label="Descripción">Panel de empresa</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--asignada">POST</span></td>
+                                <td data-label="URL"><code>/asignar/&lt;pk&gt;/</code></td>
+                                <td data-label="Vista">assign_gardener</td>
+                                <td data-label="Acceso">Login</td>
+                                <td data-label="Descripción">Asignar jardinero</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--confirmada">GET/POST</span></td>
+                                <td data-label="URL"><code>/confirmar/&lt;uuid&gt;/</code></td>
+                                <td data-label="Vista">visit_confirm</td>
+                                <td data-label="Acceso">Token</td>
+                                <td data-label="Descripción">Confirmar visita</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--cancelada">POST</span></td>
+                                <td data-label="URL"><code>/cancelar/&lt;uuid&gt;/</code></td>
+                                <td data-label="Vista">visit_cancel</td>
+                                <td data-label="Acceso">Token</td>
+                                <td data-label="Descripción">Cancelar visita</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--cancelada">POST</span></td>
+                                <td data-label="URL"><code>/logout/</code></td>
+                                <td data-label="Vista">logout_view</td>
+                                <td data-label="Acceso">Público</td>
+                                <td data-label="Descripción">Cerrar sesión</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--asignada">GET</span></td>
+                                <td data-label="URL"><code>/documentacion/</code></td>
+                                <td data-label="Vista">documentation</td>
+                                <td data-label="Acceso">Login</td>
+                                <td data-label="Descripción">Esta página</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Método"><span class="badge badge--pendiente">GET</span></td>
+                                <td data-label="URL"><code>/admin/</code></td>
+                                <td data-label="Vista">Django Admin</td>
+                                <td data-label="Acceso">Staff</td>
+                                <td data-label="Descripción">Panel de administración</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Security -->
+        <div class="card" id="seguridad">
+            <div class="card__header">
+                <h2 class="card__title">7. Seguridad</h2>
+            </div>
+            <div class="card__body docs-content">
+                <div class="docs-security-grid">
+                    <div class="docs-security-item">
+                        <div class="docs-security-item__icon">&#128274;</div>
+                        <strong>CSRF</strong>
+                        <p>Todos los formularios POST incluyen <code>{% templatetag openblock %} csrf_token {% templatetag closeblock %}</code>. El middleware de Django valida el token en cada petición.</p>
+                    </div>
+                    <div class="docs-security-item">
+                        <div class="docs-security-item__icon">&#128273;</div>
+                        <strong>IDOR Prevention</strong>
+                        <p>Las URLs de confirmación usan UUID tokens aleatorios en lugar de IDs secuenciales. Un atacante no puede adivinar el token de otro usuario.</p>
+                    </div>
+                    <div class="docs-security-item">
+                        <div class="docs-security-item__icon">&#128272;</div>
+                        <strong>Autenticación</strong>
+                        <p>Panel de empresa y documentación protegidos con <code>@login_required</code>. Asignación usa <code>@require_POST</code>.</p>
+                    </div>
+                    <div class="docs-security-item">
+                        <div class="docs-security-item__icon">&#128737;</div>
+                        <strong>XSS Prevention</strong>
+                        <p>Auto-escaping de Django en templates. Función <code>escapeHtml()</code> en JavaScript para popups del mapa. Sin uso de <code>mark_safe</code>.</p>
+                    </div>
+                    <div class="docs-security-item">
+                        <div class="docs-security-item__icon">&#128736;</div>
+                        <strong>SQL Injection</strong>
+                        <p>Uso exclusivo del ORM de Django. Ninguna consulta SQL cruda en el código.</p>
+                    </div>
+                    <div class="docs-security-item">
+                        <div class="docs-security-item__icon">&#9989;</div>
+                        <strong>Validación</strong>
+                        <p>Validación server-side en Forms y Models. Fechas futuras, rangos horarios, solapamiento de jardineros.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Shell -->
+        <div class="card" id="shell">
+            <div class="card__header">
+                <h2 class="card__title">8. Operaciones con shell_plus</h2>
+            </div>
+            <div class="card__body docs-content">
+                <p>Iniciar shell_plus (auto-importa todos los modelos):</p>
+                <pre class="docs-code"><code>python manage.py shell_plus</code></pre>
+
+                <h3>Ejemplos de uso</h3>
+                <pre class="docs-code"><code># Ver todas las solicitudes
+VisitRequest.objects.all()
+
+# Filtrar por estado
+VisitRequest.objects.filter(status='pendiente')
+
+# Buscar por nombre de cliente
+VisitRequest.objects.filter(client_name__icontains='María')
+
+# Eliminar una solicitud específica por ID
+solicitud = VisitRequest.objects.get(pk=1)
+print(f"Eliminando: {solicitud}")
+solicitud.delete()
+
+# Eliminar todas las solicitudes canceladas
+eliminadas, _ = VisitRequest.objects.filter(status='cancelada').delete()
+print(f"Se eliminaron {eliminadas} solicitudes canceladas")
+
+# Ver solicitudes de un jardinero
+VisitRequest.objects.filter(gardener__first_name='Carlos')
+
+# Verificar que se eliminó
+VisitRequest.objects.filter(pk=1).exists()  # False</code></pre>
+            </div>
+        </div>
+
+        <!-- 9. Tests -->
+        <div class="card" id="tests">
+            <div class="card__header">
+                <h2 class="card__title">9. Tests</h2>
+            </div>
+            <div class="card__body docs-content">
+                <pre class="docs-code"><code>python manage.py test visits -v 2</code></pre>
+
+                <h3>Cobertura de tests</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Categoría</th>
+                                <th>Tests</th>
+                                <th>Que verifican</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Categoría"><strong>Modelos</strong></td>
+                                <td data-label="Tests">9</td>
+                                <td data-label="Verifican">Creación, __str__, defaults, validación de horarios, solapamiento</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Categoría"><strong>Formularios</strong></td>
+                                <td data-label="Tests">10</td>
+                                <td data-label="Verifican">Campos requeridos, fecha pasada, horario inválido, servicios inactivos, coords opcionales</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Categoría"><strong>Servicios</strong></td>
+                                <td data-label="Tests">6</td>
+                                <td data-label="Verifican">Disponibilidad de jardinero, detección de solapamiento, asignación exitosa</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Categoría"><strong>Vistas</strong></td>
+                                <td data-label="Tests">~20</td>
+                                <td data-label="Verifican">Acceso público/protegido, creación de solicitudes, dashboard, filtros, asignación, confirmación</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Categoría"><strong>Seguridad</strong></td>
+                                <td data-label="Tests">~5</td>
+                                <td data-label="Verifican">IDOR con tokens falsos, login requerido, POST-only en asignación</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Structure -->
+        <div class="card" id="estructura">
+            <div class="card__header">
+                <h2 class="card__title">10. Estructura del proyecto</h2>
+            </div>
+            <div class="card__body docs-content">
+                <div class="docs-diagram">
+                    <pre class="docs-diagram__content">
+backend-ziyu/
+├── core/                          # Configuración Django
+│   ├── settings/
+│   │   ├── base.py                # Settings compartidos
+│   │   ├── local.py               # Desarrollo (DEBUG, shell_plus)
+│   │   └── prod.py                # Producción (HTTPS, HSTS)
+│   ├── urls.py                    # URLs raíz
+│   ├── wsgi.py                    # Entry point WSGI
+│   └── asgi.py                    # Entry point ASGI
+│
+├── visits/                        # App principal
+│   ├── management/commands/
+│   │   └── load_initial_data.py   # Datos iniciales
+│   ├── migrations/
+│   │   └── 0001_initial.py        # Migración inicial
+│   ├── models.py                  # ServiceType, Gardener, VisitRequest
+│   ├── views.py                   # 8 vistas (públicas + protegidas)
+│   ├── forms.py                   # VisitRequestForm, AssignGardenerForm
+│   ├── services.py                # Lógica de negocio (solapamiento)
+│   ├── urls.py                    # 8 rutas con app_name
+│   ├── admin.py                   # Admin personalizado
+│   └── tests.py                   # ~45 tests
+│
+├── templates/
+│   ├── base.html                  # Layout base (nav, footer, Leaflet)
+│   └── visits/
+│       ├── visit_request_form.html
+│       ├── visit_request_success.html
+│       ├── company_dashboard.html
+│       ├── visit_confirm.html
+│       └── documentation.html     # Esta página
+│
+├── static/
+│   ├── css/styles.css             # Design system completo
+│   └── js/
+│       ├── main.js                # Nav, alerts, modal de errores
+│       └── map.js                 # Leaflet + geocodificación
+│
+├── manage.py
+├── requirements.txt
+├── .env                           # Variables de entorno (NO en Git)
+├── .gitignore
+└── README.md</pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Gestión - Ziyu Jardinería{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-header__title">Panel de Gestión</h1>
+            <p class="dashboard-header__subtitle">Administra las solicitudes de visita</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card stat-card--total">
+                <div class="stat-card__number">{{ stats.total }}</div>
+                <div class="stat-card__label">Total</div>
+            </div>
+            <div class="stat-card stat-card--pending">
+                <div class="stat-card__number">{{ stats.pendientes }}</div>
+                <div class="stat-card__label">Pendientes</div>
+            </div>
+            <div class="stat-card stat-card--assigned">
+                <div class="stat-card__number">{{ stats.asignadas }}</div>
+                <div class="stat-card__label">Asignadas</div>
+            </div>
+            <div class="stat-card stat-card--confirmed">
+                <div class="stat-card__number">{{ stats.confirmadas }}</div>
+                <div class="stat-card__label">Confirmadas</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card card--filters">
+            <div class="card__body">
+                <form method="get" class="filter-form">
+                    <div class="filter-form__group">
+                        <label for="filter-status" class="form-label">Estado</label>
+                        <select name="status" id="filter-status" class="form-input">
+                            <option value="">Todos</option>
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-form__group">
+                        <label for="filter-service" class="form-label">Servicio</label>
+                        <select name="service_type" id="filter-service" class="form-input">
+                            <option value="">Todos</option>
+                            {% for service in service_types %}
+                            <option value="{{ service.pk }}" {% if current_service == service.pk|stringformat:"d" %}selected{% endif %}>
+                                {{ service.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-form__actions">
+                        <button type="submit" class="btn btn--secondary btn--sm">Filtrar</button>
+                        <a href="{% url 'visits:company_dashboard' %}" class="btn btn--outline btn--sm">Limpiar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Visits Table -->
+        <div class="card">
+            <div class="card__header">
+                <h2 class="card__title">Solicitudes de visita</h2>
+            </div>
+            <div class="card__body card__body--no-padding">
+                {% if visits %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Servicio</th>
+                                <th>Dirección</th>
+                                <th>Fecha</th>
+                                <th>Horario</th>
+                                <th>Estado</th>
+                                <th>Jardinero</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for visit in visits %}
+                            <tr>
+                                <td data-label="Cliente">
+                                    <div class="client-info">
+                                        <strong>{{ visit.client_name }}</strong>
+                                        <small>{{ visit.client_email }}</small>
+                                    </div>
+                                </td>
+                                <td data-label="Servicio">{{ visit.service_type.name }}</td>
+                                <td data-label="Dirección">{{ visit.address }}</td>
+                                <td data-label="Fecha">{{ visit.preferred_date|date:"d/m/Y" }}</td>
+                                <td data-label="Horario">{{ visit.preferred_time_start|time:"H:i" }} - {{ visit.preferred_time_end|time:"H:i" }}</td>
+                                <td data-label="Estado">
+                                    <span class="badge badge--{{ visit.status }}">
+                                        {{ visit.get_status_display }}
+                                    </span>
+                                </td>
+                                <td data-label="Jardinero">
+                                    {% if visit.gardener %}
+                                        {{ visit.gardener }}
+                                    {% else %}
+                                        <span class="text-muted">Sin asignar</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Acciones">
+                                    {% if visit.status == 'pendiente' or visit.status == 'asignada' %}
+                                    <button
+                                        class="btn btn--primary btn--sm btn-assign"
+                                        data-visit-id="{{ visit.pk }}"
+                                        data-visit-client="{{ visit.client_name }}"
+                                        data-visit-date="{{ visit.preferred_date|date:'d/m/Y' }}"
+                                        data-visit-time="{{ visit.preferred_time_start|time:'H:i' }} - {{ visit.preferred_time_end|time:'H:i' }}"
+                                    >
+                                        {% if visit.gardener %}Reasignar{% else %}Asignar{% endif %}
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <p class="empty-state__text">No hay solicitudes de visita{% if current_status or current_service %} con los filtros seleccionados{% endif %}.</p>
+                    {% if current_status or current_service %}
+                    <a href="{% url 'visits:company_dashboard' %}" class="btn btn--outline btn--sm">Ver todas</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="card">
+            <div class="card__header">
+                <h2 class="card__title">Ubicación de visitas</h2>
+            </div>
+            <div class="card__body">
+                <div id="dashboard-map" class="map-container map-container--lg"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Assign Gardener Modal -->
+<div class="modal" id="assignModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__dialog">
+        <div class="modal__header">
+            <h3 class="modal__title">Asignar Jardinero</h3>
+            <button class="modal__close" id="modalClose" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+            <p class="modal__info" id="modalInfo"></p>
+            <form method="post" id="assignForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ assign_form.gardener.id_for_label }}" class="form-label">
+                        Selecciona un jardinero
+                    </label>
+                    {{ assign_form.gardener }}
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn--outline" id="modalCancel">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">Asignar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/map.js' %}" defer></script>
+<script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Assign modal logic
+        var modal = document.getElementById('assignModal');
+        var assignForm = document.getElementById('assignForm');
+        var modalInfo = document.getElementById('modalInfo');
+        var modalClose = document.getElementById('modalClose');
+        var modalCancel = document.getElementById('modalCancel');
+        var overlay = modal.querySelector('.modal__overlay');
+
+        function openModal(visitId, client, date, time) {
+            assignForm.action = '/asignar/' + visitId + '/';
+            modalInfo.textContent = client + ' — ' + date + ', ' + time;
+            modal.classList.add('modal--active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('modal--active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.btn-assign').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                openModal(
+                    this.dataset.visitId,
+                    this.dataset.visitClient,
+                    this.dataset.visitDate,
+                    this.dataset.visitTime
+                );
+            });
+        });
+
+        if (modalClose) modalClose.addEventListener('click', closeModal);
+        if (modalCancel) modalCancel.addEventListener('click', closeModal);
+        if (overlay) overlay.addEventListener('click', closeModal);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('modal--active')) {
+                closeModal();
+            }
+        });
+
+        // Dashboard map
+        var mapData = JSON.parse('{{ map_data|escapejs }}');
+        if (typeof initDashboardMap === 'function') {
+            initDashboardMap(mapData);
+        }
+    });
+</script>
+{% endblock %}

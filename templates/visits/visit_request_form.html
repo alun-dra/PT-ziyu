@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Solicitar Visita - Ziyu Jardinería{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <h1 class="hero__title">Solicitar Visita de Jardinería</h1>
+        <p class="hero__subtitle">
+            Completa el formulario y un jardinero profesional visitará tu hogar.
+            Te contactaremos para confirmar la fecha y horario.
+        </p>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="section">
+    <div class="container">
+        <div class="card card--form">
+            <div class="card__header">
+                <h2 class="card__title">Datos de la solicitud</h2>
+            </div>
+            <div class="card__body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        {% for error in form.non_field_errors %}
+                        <p class="form-errors__item">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Datos personales -->
+                    <fieldset class="form-fieldset">
+                        <legend class="form-fieldset__legend">Información de contacto</legend>
+
+                        <div class="form-row form-row--2col">
+                            <div class="form-group{% if form.client_name.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.client_name.id_for_label }}" class="form-label">
+                                    {{ form.client_name.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.client_name }}
+                                {% if form.client_name.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.client_name.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group{% if form.client_email.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.client_email.id_for_label }}" class="form-label">
+                                    {{ form.client_email.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.client_email }}
+                                {% if form.client_email.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.client_email.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group{% if form.client_phone.errors %} form-group--error{% endif %}">
+                            <label for="{{ form.client_phone.id_for_label }}" class="form-label">
+                                {{ form.client_phone.label }} <span class="form-required">*</span>
+                            </label>
+                            {{ form.client_phone }}
+                            {% if form.client_phone.errors %}
+                            <ul class="form-field-errors">
+                                {% for error in form.client_phone.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+
+                    <!-- Ubicación -->
+                    <fieldset class="form-fieldset">
+                        <legend class="form-fieldset__legend">Ubicación</legend>
+
+                        <div class="form-group{% if form.address.errors %} form-group--error{% endif %}">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">
+                                {{ form.address.label }} <span class="form-required">*</span>
+                            </label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                            <ul class="form-field-errors">
+                                {% for error in form.address.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Marca la ubicación en el mapa (opcional)</label>
+                            <div id="request-map" class="map-container"></div>
+                            <p class="form-help">Haz clic en el mapa para indicar la ubicación exacta de tu jardín.</p>
+                            {{ form.latitude }}
+                            {{ form.longitude }}
+                        </div>
+                    </fieldset>
+
+                    <!-- Servicio -->
+                    <fieldset class="form-fieldset">
+                        <legend class="form-fieldset__legend">Detalles del servicio</legend>
+
+                        <div class="form-row form-row--2col">
+                            <div class="form-group{% if form.service_type.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.service_type.id_for_label }}" class="form-label">
+                                    {{ form.service_type.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.service_type }}
+                                {% if form.service_type.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.service_type.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group{% if form.garden_area_sqm.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.garden_area_sqm.id_for_label }}" class="form-label">
+                                    {{ form.garden_area_sqm.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.garden_area_sqm }}
+                                {% if form.garden_area_sqm.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.garden_area_sqm.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Fecha y hora -->
+                    <fieldset class="form-fieldset">
+                        <legend class="form-fieldset__legend">Fecha y horario preferido</legend>
+
+                        <div class="form-row form-row--3col">
+                            <div class="form-group{% if form.preferred_date.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.preferred_date.id_for_label }}" class="form-label">
+                                    {{ form.preferred_date.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.preferred_date }}
+                                {% if form.preferred_date.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.preferred_date.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group{% if form.preferred_time_start.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.preferred_time_start.id_for_label }}" class="form-label">
+                                    {{ form.preferred_time_start.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.preferred_time_start }}
+                                {% if form.preferred_time_start.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.preferred_time_start.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group{% if form.preferred_time_end.errors %} form-group--error{% endif %}">
+                                <label for="{{ form.preferred_time_end.id_for_label }}" class="form-label">
+                                    {{ form.preferred_time_end.label }} <span class="form-required">*</span>
+                                </label>
+                                {{ form.preferred_time_end }}
+                                {% if form.preferred_time_end.errors %}
+                                <ul class="form-field-errors">
+                                    {% for error in form.preferred_time_end.errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Notas -->
+                    <fieldset class="form-fieldset">
+                        <legend class="form-fieldset__legend">Información adicional</legend>
+                        <div class="form-group{% if form.notes.errors %} form-group--error{% endif %}">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                {{ form.notes.label }}
+                            </label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                            <ul class="form-field-errors">
+                                {% for error in form.notes.errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary btn--lg">
+                            Enviar Solicitud
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Error Modal -->
+<div class="modal" id="errorModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__dialog">
+        <div class="modal__header modal__header--error">
+            <h3 class="modal__title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" style="vertical-align:middle;margin-right:6px;">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Errores en el formulario
+            </h3>
+            <button class="modal__close" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+            <p class="error-modal__intro">Por favor corrige los siguientes campos:</p>
+            <ul class="error-modal__list"></ul>
+            <div class="form-actions" style="justify-content:center;padding-top:var(--space-4);">
+                <button type="button" class="btn btn--primary error-modal__ok">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/map.js' %}" defer></script>
+<script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initRequestMap === 'function') {
+            initRequestMap('{{ form.latitude.id_for_label }}', '{{ form.longitude.id_for_label }}');
+        }
+    });
+</script>
+{% endblock %}

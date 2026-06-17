@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Visita - Ziyu Jardinería{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="confirm-page">
+            <h1 class="confirm-page__title">Detalles de tu Visita</h1>
+
+            <div class="card card--confirm">
+                <div class="card__body">
+                    <!-- Status Badge -->
+                    <div class="confirm-status">
+                        <span class="badge badge--{{ visit.status }} badge--lg">
+                            {{ visit.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Visit Details -->
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-item__label">Cliente</span>
+                            <span class="detail-item__value">{{ visit.client_name }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-item__label">Servicio</span>
+                            <span class="detail-item__value">{{ visit.service_type.name }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-item__label">Dirección</span>
+                            <span class="detail-item__value">{{ visit.address }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-item__label">Área del jardín</span>
+                            <span class="detail-item__value">{{ visit.garden_area_sqm }} m&sup2;</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-item__label">Fecha</span>
+                            <span class="detail-item__value">{{ visit.preferred_date|date:"l d \d\e F \d\e Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-item__label">Horario</span>
+                            <span class="detail-item__value">{{ visit.preferred_time_start|time:"H:i" }} - {{ visit.preferred_time_end|time:"H:i" }}</span>
+                        </div>
+
+                        {% if visit.gardener %}
+                        <div class="detail-item">
+                            <span class="detail-item__label">Jardinero asignado</span>
+                            <span class="detail-item__value">{{ visit.gardener }}</span>
+                        </div>
+                        {% endif %}
+
+                        {% if visit.notes %}
+                        <div class="detail-item detail-item--full">
+                            <span class="detail-item__label">Notas</span>
+                            <span class="detail-item__value">{{ visit.notes }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="confirm-actions">
+                        {% if visit.status == 'asignada' %}
+                        <form method="post" action="{% url 'visits:visit_confirm' token=visit.confirmation_token %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn--primary btn--lg">
+                                Confirmar Visita
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'visits:visit_cancel' token=visit.confirmation_token %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn--danger btn--lg"
+                                    onclick="return confirm('¿Estás seguro de que deseas cancelar esta visita?');">
+                                Cancelar Visita
+                            </button>
+                        </form>
+
+                        {% elif visit.status == 'pendiente' %}
+                        <div class="confirm-notice confirm-notice--info">
+                            <p>Tu solicitud está siendo revisada. Te notificaremos cuando un jardinero sea asignado para que puedas confirmar.</p>
+                        </div>
+                        <form method="post" action="{% url 'visits:visit_cancel' token=visit.confirmation_token %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn--danger"
+                                    onclick="return confirm('¿Estás seguro de que deseas cancelar esta visita?');">
+                                Cancelar Solicitud
+                            </button>
+                        </form>
+
+                        {% elif visit.status == 'confirmada' %}
+                        <div class="confirm-notice confirm-notice--success">
+                            <p>Tu visita está confirmada. El jardinero se presentará en la fecha y horario acordados.</p>
+                        </div>
+                        <form method="post" action="{% url 'visits:visit_cancel' token=visit.confirmation_token %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn--danger"
+                                    onclick="return confirm('¿Estás seguro de que deseas cancelar esta visita confirmada?');">
+                                Cancelar Visita
+                            </button>
+                        </form>
+
+                        {% elif visit.status == 'cancelada' %}
+                        <div class="confirm-notice confirm-notice--warning">
+                            <p>Esta visita ha sido cancelada. Si necesitas una nueva visita, puedes solicitarla nuevamente.</p>
+                        </div>
+                        <a href="{% url 'visits:visit_request' %}" class="btn btn--primary">
+                            Solicitar nueva visita
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
